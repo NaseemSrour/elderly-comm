@@ -6,7 +6,11 @@ plugins {
 
 android {
     namespace = "com.household.elderly_comm"
-    compileSdk = flutter.compileSdkVersion
+    // file_picker's flutter_plugin_android_lifecycle requires compileSdk >= 36;
+    // Flutter's default (flutter.compileSdkVersion) is still 34 here. Pinning
+    // compileSdk only allows newer APIs to compile — it does not change targetSdk
+    // (runtime behavior) or minSdk (device support).
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

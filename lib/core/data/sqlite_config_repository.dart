@@ -40,38 +40,68 @@ class SqliteConfigRepository implements ConfigStore {
         where: 'key = ?', whereArgs: ['seeded'], limit: 1);
     if (meta.isNotEmpty) return;
 
-    final config = buildSampleConfig();
+    await db.transaction((txn) => _writeConfig(txn, buildSampleConfig()));
+  }
+
+  /// Content tables wiped/rewritten by a full [replaceAll]. `languages` and the
+  /// household `app_meta` keys are handled explicitly (see [_writeConfig]).
+  static const _contentTables = [
+    'situations',
+    'objects',
+    'actions',
+    'locations',
+    'common_requests',
+    'routines',
+    'help_requests',
+    'languages',
+  ];
+
+  /// Inserts an entire [config] within an existing transaction. Assumes the
+  /// target tables are already empty (fresh seed or post-clear in [replaceAll]).
+  Future<void> _writeConfig(Transaction txn, HouseholdConfig config) async {
+    final batch = txn.batch();
+    for (final l in config.languages) {
+      batch.insert('languages', ConfigMappers.languageToRow(l));
+    }
+    for (final s in config.situations) {
+      batch.insert('situations', ConfigMappers.situationToRow(s));
+    }
+    for (final a in config.actions) {
+      batch.insert('actions', ConfigMappers.actionToRow(a));
+    }
+    for (final loc in config.locations) {
+      batch.insert('locations', ConfigMappers.locationToRow(loc));
+    }
+    for (final o in config.objects) {
+      batch.insert('objects', ConfigMappers.objectToRow(o));
+    }
+    for (final c in config.commonRequests) {
+      batch.insert('common_requests', ConfigMappers.commonRequestToRow(c));
+    }
+    for (final rt in config.routines) {
+      batch.insert('routines', ConfigMappers.routineToRow(rt));
+    }
+    for (final h in config.helpRequests) {
+      batch.insert('help_requests', ConfigMappers.helpRequestToRow(h));
+    }
+    void meta(String key, String value) => batch.insert('app_meta',
+        {'key': key, 'value': value}, conflictAlgorithm: ConflictAlgorithm.replace);
+    meta('household_name', config.householdName);
+    meta('elder_lang', config.elderLang);
+    meta('caregiver_lang', config.caregiverLang);
+    meta('font_scale', config.fontScale.toString());
+    meta('seeded', '1');
+    await batch.commit(noResult: true);
+  }
+
+  @override
+  Future<void> replaceAll(HouseholdConfig config) async {
+    final db = await _database;
     await db.transaction((txn) async {
-      final batch = txn.batch();
-      for (final l in config.languages) {
-        batch.insert('languages', ConfigMappers.languageToRow(l));
+      for (final table in _contentTables) {
+        await txn.delete(table);
       }
-      for (final s in config.situations) {
-        batch.insert('situations', ConfigMappers.situationToRow(s));
-      }
-      for (final a in config.actions) {
-        batch.insert('actions', ConfigMappers.actionToRow(a));
-      }
-      for (final loc in config.locations) {
-        batch.insert('locations', ConfigMappers.locationToRow(loc));
-      }
-      for (final o in config.objects) {
-        batch.insert('objects', ConfigMappers.objectToRow(o));
-      }
-      for (final c in config.commonRequests) {
-        batch.insert('common_requests', ConfigMappers.commonRequestToRow(c));
-      }
-      for (final rt in config.routines) {
-        batch.insert('routines', ConfigMappers.routineToRow(rt));
-      }
-      for (final h in config.helpRequests) {
-        batch.insert('help_requests', ConfigMappers.helpRequestToRow(h));
-      }
-      batch.insert('app_meta', {'key': 'household_name', 'value': config.householdName});
-      batch.insert('app_meta', {'key': 'elder_lang', 'value': config.elderLang});
-      batch.insert('app_meta', {'key': 'caregiver_lang', 'value': config.caregiverLang});
-      batch.insert('app_meta', {'key': 'seeded', 'value': '1'});
-      await batch.commit(noResult: true);
+      await _writeConfig(txn, config);
     });
   }
 

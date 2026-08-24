@@ -146,22 +146,36 @@ class _BigCardState extends State<BigCard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Picture zone — takes all remaining space.
-              Expanded(child: Center(child: _visual())),
-              const SizedBox(height: 10),
-              // Text zone — its own space, so it never overlaps the picture.
-              Text(
-                widget.label,
-                textAlign: TextAlign.center,
-                textDirection:
-                    widget.rtl ? TextDirection.rtl : TextDirection.ltr,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: AppSizes.cardLabel,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
-                  height: 1.1,
+              // Picture zone — takes most of the card.
+              Expanded(flex: 5, child: Center(child: _visual())),
+              const SizedBox(height: 8),
+              // Text zone — its own space. Wraps, and scales down to fit if the
+              // card is small, so it never overlaps the picture or overflows.
+              Expanded(
+                flex: 2,
+                child: LayoutBuilder(
+                  builder: (context, cc) => Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: cc.maxWidth),
+                        child: Text(
+                          widget.label,
+                          textAlign: TextAlign.center,
+                          textDirection: widget.rtl
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
+                          maxLines: 2,
+                          style: const TextStyle(
+                            fontSize: AppSizes.cardLabel,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.ink,
+                            height: 1.1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -297,31 +311,64 @@ class NavButton extends StatelessWidget {
   }
 }
 
-/// A responsive, non-scroll-dependent grid of [BigCard]s. Chooses a column
-/// count from the available width so cards stay large on any tablet size.
-class CardGrid extends StatelessWidget {
+/// A grid that ALWAYS fits every tile on screen — never scrolls. It picks the
+/// column/row split that makes the tiles as large as possible within the
+/// available box, then fills that box exactly. Critical for the elder, who may
+/// not know how to scroll: if it's on this screen, it's visible.
+class FitGrid extends StatelessWidget {
   final List<Widget> children;
-  final double minCardWidth;
+  final double gap;
 
-  const CardGrid({
-    super.key,
-    required this.children,
-    this.minCardWidth = 300,
-  });
+  const FitGrid({super.key, required this.children, this.gap = AppSizes.gap});
 
   @override
   Widget build(BuildContext context) {
+    if (children.isEmpty) return const SizedBox.shrink();
     return LayoutBuilder(
       builder: (context, c) {
-        // Fewer, bigger cards (max 4 across) so pictures and text stay large.
-        final cols = (c.maxWidth / minCardWidth).floor().clamp(2, 4);
-        return GridView.count(
-          crossAxisCount: cols,
-          mainAxisSpacing: AppSizes.gap,
-          crossAxisSpacing: AppSizes.gap,
-          childAspectRatio: 0.95,
-          physics: const BouncingScrollPhysics(),
-          children: children,
+        final n = children.length;
+        final w = c.maxWidth;
+        final h = c.maxHeight;
+
+        // Choose the column count whose resulting tiles are largest (we
+        // maximise the tile's limiting side so tiles stay big and touchable).
+        var bestCols = 1;
+        var bestScore = -1.0;
+        for (var cols = 1; cols <= n; cols++) {
+          final rows = (n / cols).ceil();
+          final cellW = (w - (cols - 1) * gap) / cols;
+          final cellH = (h - (rows - 1) * gap) / rows;
+          if (cellW <= 0 || cellH <= 0) continue;
+          final score = cellW < cellH ? cellW : cellH;
+          if (score > bestScore) {
+            bestScore = score;
+            bestCols = cols;
+          }
+        }
+
+        final cols = bestCols;
+        final rows = (n / cols).ceil();
+
+        return Column(
+          children: [
+            for (var r = 0; r < rows; r++) ...[
+              if (r > 0) SizedBox(height: gap),
+              Expanded(
+                child: Row(
+                  children: [
+                    for (var col = 0; col < cols; col++) ...[
+                      if (col > 0) SizedBox(width: gap),
+                      Expanded(
+                        child: (r * cols + col) < n
+                            ? children[r * cols + col]
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
         );
       },
     );

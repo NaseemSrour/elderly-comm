@@ -91,50 +91,61 @@ class _RequestDisplayScreenState extends State<RequestDisplayScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Caregiver language — primary, on top.
-                    Text(
-                      r.caregiverText,
-                      textAlign: TextAlign.center,
-                      textDirection:
-                          r.caregiverRtl ? TextDirection.rtl : TextDirection.ltr,
-                      style: const TextStyle(
-                        fontSize: AppSizes.finalPrimary,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
-                        height: 1.1,
-                      ),
+            child: LayoutBuilder(
+              builder: (context, cc) => Center(
+                // Scale-to-fit instead of scroll: the request is always fully
+                // visible, and the elder never needs to scroll. Width is fixed
+                // to the viewport so the sentences still wrap naturally.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: SizedBox(
+                    width: cc.maxWidth,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Caregiver language — primary, on top.
+                        Text(
+                          r.caregiverText,
+                          textAlign: TextAlign.center,
+                          textDirection: r.caregiverRtl
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
+                          style: const TextStyle(
+                            fontSize: AppSizes.finalPrimary,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        // Big redundant visual: real photo if set, else glyph.
+                        _bigVisual(r),
+                        if (r.actionEmoji != null || r.destinationEmoji != null)
+                          Text(
+                            [
+                              if (r.actionEmoji != null) r.actionEmoji!,
+                              if (r.destinationEmoji != null) r.destinationEmoji!,
+                            ].join('   '),
+                            style: const TextStyle(fontSize: 56),
+                          ),
+                        const SizedBox(height: 24),
+                        // Elder language — reassurance for the person asking.
+                        Text(
+                          r.elderText,
+                          textAlign: TextAlign.center,
+                          textDirection: r.elderRtl
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
+                          style: const TextStyle(
+                            fontSize: AppSizes.finalSecondary,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.inkSoft,
+                            height: 1.1,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    // Big redundant visual: real photo if configured, else glyph.
-                    _bigVisual(r),
-                    if (r.actionEmoji != null || r.destinationEmoji != null)
-                      Text(
-                        [
-                          if (r.actionEmoji != null) r.actionEmoji!,
-                          if (r.destinationEmoji != null) r.destinationEmoji!,
-                        ].join('   '),
-                        style: const TextStyle(fontSize: 56),
-                      ),
-                    const SizedBox(height: 24),
-                    // Elder language — reassurance for the person making the ask.
-                    Text(
-                      r.elderText,
-                      textAlign: TextAlign.center,
-                      textDirection:
-                          r.elderRtl ? TextDirection.rtl : TextDirection.ltr,
-                      style: const TextStyle(
-                        fontSize: AppSizes.finalSecondary,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.inkSoft,
-                        height: 1.1,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -55,27 +55,20 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // One-tap common requests.
-              SizedBox(
-                height: 260,
-                child: Row(
+              // One-tap common requests. Shares the vertical space with the
+              // grid below (flex) so the whole screen fits without scrolling.
+              Expanded(
+                flex: 2,
+                child: FitGrid(
                   children: [
-                    for (int i = 0;
-                        i < config.orderedCommonRequests.length;
-                        i++) ...[
-                      if (i > 0) const SizedBox(width: AppSizes.gap),
-                      Expanded(
-                        child: BigCard(
-                          emoji: config.orderedCommonRequests[i].emoji,
-                          label: config.orderedCommonRequests[i].label
-                              .forLang(scope.elderLang),
-                          color: AppColors.bring,
-                          rtl: scope.elderRtl,
-                          onTap: () => openRequest(
-                              context, config.orderedCommonRequests[i].intent),
-                        ),
+                    for (final cr in config.orderedCommonRequests)
+                      BigCard(
+                        emoji: cr.emoji,
+                        label: cr.label.forLang(scope.elderLang),
+                        color: AppColors.bring,
+                        rtl: scope.elderRtl,
+                        onTap: () => openRequest(context, cr.intent),
                       ),
-                    ],
                   ],
                 ),
               ),
@@ -84,7 +77,8 @@ class HomeScreen extends StatelessWidget {
 
               // Rooms + routines + help.
               Expanded(
-                child: CardGrid(
+                flex: 3,
+                child: FitGrid(
                   children: [
                     for (final s in config.orderedSituations)
                       BigCard(

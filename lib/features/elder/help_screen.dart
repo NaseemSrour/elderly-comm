@@ -18,7 +18,7 @@ class HelpScreen extends StatelessWidget {
       ..sort((a, b) => a.order.compareTo(b.order));
     return ElderScaffold(
       question: '🆘',
-      body: CardGrid(
+      body: FitGrid(
         children: [
           for (final h in helps)
             BigCard(

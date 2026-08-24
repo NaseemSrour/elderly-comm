@@ -17,8 +17,7 @@ class RoutineScreen extends StatelessWidget {
     return ElderScaffold(
       question: '${routine.emoji}  ${routine.label.forLang(scope.elderLang)}',
       questionRtl: scope.elderRtl,
-      body: CardGrid(
-        minCardWidth: 260,
+      body: FitGrid(
         children: [
           for (final step in routine.steps)
             Builder(builder: (context) {

@@ -40,6 +40,11 @@ abstract class ConfigStore implements ConfigRepository {
 
   Future<void> upsertHelpRequest(HelpRequest h);
   Future<void> deleteHelpRequest(String id);
+
+  /// Replaces the ENTIRE stored configuration with [config] in one atomic step.
+  /// Used by import/restore — every existing situation, object, action, etc. is
+  /// discarded and replaced. Household settings are overwritten too.
+  Future<void> replaceAll(HouseholdConfig config);
 }
 
 class SampleConfigRepository implements ConfigRepository {

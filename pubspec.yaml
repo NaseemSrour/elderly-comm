@@ -48,6 +48,10 @@ dependencies:
   # Photo capture for objects/situations (real household photos — a core feature).
   image_picker: ^1.1.2
 
+  # Save/open the backup file when exporting or importing household data
+  # (single self-contained .json). Cross-platform (Android tablet + Windows dev).
+  file_picker: ^8.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

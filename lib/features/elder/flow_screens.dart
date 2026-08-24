@@ -28,7 +28,7 @@ class ObjectScreen extends StatelessWidget {
       question:
           '${situation.emoji}  ${situation.label.forLang(scope.elderLang)}',
       questionRtl: scope.elderRtl,
-      body: CardGrid(
+      body: FitGrid(
         children: [
           for (final o in objects)
             BigCard(
@@ -61,7 +61,7 @@ class ActionScreen extends StatelessWidget {
       question:
           '${object.emoji}  ${ui.whatDoYouWant}',
       questionRtl: scope.elderRtl,
-      body: CardGrid(
+      body: FitGrid(
         children: [
           for (final a in actions)
             BigCard(
@@ -108,7 +108,7 @@ class DestinationScreen extends StatelessWidget {
     return ElderScaffold(
       question: ui.where,
       questionRtl: scope.elderRtl,
-      body: CardGrid(
+      body: FitGrid(
         children: [
           for (final d in destinations)
             BigCard(

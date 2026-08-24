@@ -54,6 +54,22 @@ void main() {
     expect(find.text('🆘'), findsOneWidget);
   });
 
+  testWidgets('Home fits on a small screen with no overflow (no scrolling)',
+      (tester) async {
+    // A deliberately short viewport: the fit-to-screen grid must still lay out
+    // every tile without a RenderFlex overflow (which would mean scrolling).
+    tester.view.physicalSize = const Size(1000, 560);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ElderApp(store: MemoryStore(), initialConfig: buildSampleConfig()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Admin object form opens without inherited-widget error',
       (tester) async {
     tester.view.physicalSize = const Size(1600, 1000);

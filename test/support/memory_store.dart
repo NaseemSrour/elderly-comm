@@ -4,10 +4,13 @@ import 'package:elderly_comm/core/models/models.dart';
 
 /// A trivial in-memory [ConfigStore] for widget tests — no SQLite/FFI needed.
 class MemoryStore implements ConfigStore {
-  final HouseholdConfig _config = buildSampleConfig();
+  HouseholdConfig _config = buildSampleConfig();
 
   @override
   Future<HouseholdConfig> load() async => _config;
+
+  @override
+  Future<void> replaceAll(HouseholdConfig config) async => _config = config;
 
   @override
   Future<void> saveHousehold({
