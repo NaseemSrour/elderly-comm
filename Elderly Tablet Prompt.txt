@@ -1,0 +1,1630 @@
+Elderly Visual Communication Tablet App
+1. ROLE AND OBJECTIVE
+You are an expert Flutter engineer, UX designer specializing in accessibility and elderly users, product architect, and interaction designer.
+Build a single-device Flutter tablet application designed for an elderly person who has essentially no experience with computers, smartphones, tablets, apps, buttons, menus, or technology.
+The application is intended to help the elderly person communicate with a foreign caregiver/worker living in their home when the two people do not speak the same language.
+The elderly user should be able to communicate requests such as:
+• Bring me a bowl.
+• Bring me water.
+• Bring me a plate.
+• Bring me a knife.
+• Bring me bread.
+• Put this in the refrigerator.
+• Open the window.
+• Close the window.
+• Turn something on/off.
+• Take something away.
+• Wash something.
+• Help me go to the bathroom.
+• Help me sit down.
+• Help me get into bed.
+• Help me with something.
+• Perform a morning routine.
+• Perform a nighttime routine.
+• And essentially any other household necessity that can be represented through configurable objects, actions, situations, and routines.
+The central design principle is:
+The elderly person should not have to understand technology, language, menus, keyboards, or sentence construction. They should only need to recognize familiar pictures and tap them.
+This is NOT primarily a translation app.
+It is a visual, semantic communication system.
+The app should represent the elderly person's intent internally as structured semantic data, and only at the final presentation stage turn that intent into text, speech, and/or visual representation in the caregiver's language.
+
+───
+
+2. VERY IMPORTANT PRODUCT PHILOSOPHY
+Do NOT build this as:
+• a simplified Google Translate
+• a normal chat application
+• a normal Android tablet application
+• a generic accessibility UI
+• a conventional menu-driven application
+• a keyboard-based communication system
+• a sentence-writing application
+Instead, think of it as:
+A personalized visual communication board for one particular household.
+The application should be customized around the actual elderly person's home, vocabulary, objects, routines, habits, and way of thinking.
+The goal is not to support thousands of generic objects.
+The goal is to support the approximately 30–100 things and requests that the particular elderly person actually needs.
+
+───
+
+3. THERE IS ONLY ONE APP
+There is NO caregiver app.
+There is NO required caregiver account.
+There is NO requirement for the caregiver to install anything.
+The elderly person's tablet is the communication device.
+The elderly person constructs a request and the tablet displays the result.
+The elderly person then physically turns the tablet toward the caregiver.
+The caregiver reads the request from the tablet.
+Optionally, the tablet can pronounce the request aloud in the caregiver's language.
+Example:
+The elderly person taps:
+1. Kitchen
+2. Bowl
+3. Bring
+4. To me
+The app generates:
+🥣
+جيبلّي زبدية
+ Bring me a bowl.
+The elderly person shows the screen to the caregiver.
+The caregiver does not need to interact with the application.
+
+───
+
+4. PRIMARY UX PRINCIPLE
+The UI must be designed for someone who may not understand concepts such as:
+• "tap"
+• "button"
+• "menu"
+• "screen"
+• "back"
+• "settings"
+• "swipe"
+• "scroll"
+• "app"
+• "keyboard"
+Therefore:
+Never rely on the user understanding technology.
+The UI should communicate through:
+• large photographs
+• large icons
+• color
+• spatial consistency
+• repetition
+• extremely simple choices
+• immediate visual feedback
+• familiar household objects
+• minimal text
+The user should recognize what they want rather than read instructions about what to do.
+
+───
+
+5. DO NOT OVERUSE TEXT
+Text is allowed, but it is secondary.
+A large photograph/icon should communicate the meaning first.
+For example, instead of a small button:
+Kitchen
+prefer a huge visual card:
+🍳
+KITCHEN
+Or, ideally, a photograph of the actual kitchen if appropriate.
+For objects, use photographs of the actual household objects whenever possible.
+For example:
+• photograph of the actual bowl
+• photograph of the actual cup
+• photograph of the actual medicine
+• photograph of the actual AC remote
+• photograph of the actual window
+• photograph of the actual kettle
+The elderly person should think:
+"That's my bowl."
+rather than:
+"I think that icon means bowl."
+
+───
+
+6. ACTUAL PHOTOS ARE A CORE FEATURE
+The family will configure the application and provide photographs of actual household objects.
+The configuration system should allow a family member to:
+1. Add an object.
+2. Take a photograph or select one.
+3. Give it a name.
+4. Define its translations.
+5. Define its location/situation.
+6. Define which actions make sense for it.
+7. Optionally define aliases/family-specific names.
+8. Optionally add multiple photographs.
+For example:
+Object:
+text
+ID: bowl_01
+Display name: Bowl
+Arabic: زبدية
+English: Bowl
+Worker language: [configured translation]
+Location: Kitchen
+
+Available actions:
+text
+BRING
+WASH
+PUT
+TAKE
+
+
+───
+
+7. FAMILY-SPECIFIC VOCABULARY
+Do NOT assume the elderly person uses standard dictionary terminology.
+The family should be able to configure what the elderly person actually calls something.
+For example:
+Internal semantic object:
+text
+bowl
+
+Family vocabulary:
+text
+زبدية
+
+Alternative:
+text
+صحن عميق
+
+The system should distinguish between:
+• internal semantic ID
+• elderly person's display vocabulary
+• caregiver's language
+• optional family aliases
+This allows the underlying system to remain language-independent.
+
+───
+
+8. SEMANTIC / INTENT ARCHITECTURE
+This is one of the most important architectural requirements.
+DO NOT store communication primarily as sentences.
+Represent requests as structured intents.
+For example:
+json
+{
+  "object": "bowl_01",
+  "action": "BRING",
+  "destination": "TO_ME",
+  "quantity": 1
+}
+
+Another:
+json
+{
+  "object": "bedroom_window",
+  "action": "CLOSE"
+}
+
+Another:
+json
+{
+  "object": "bread",
+  "action": "BRING",
+  "destination": "TO_ME",
+  "quantity": 1
+}
+
+Another:
+json
+{
+  "object": "bowl_01",
+  "action": "PUT",
+  "destination": "REFRIGERATOR"
+}
+
+The semantic representation should be independent of language.
+
+───
+
+9. LANGUAGE IS A PRESENTATION LAYER
+The same semantic request can be rendered into different languages.
+Example:
+Internal:
+text
+BOWL + BRING + TO_ME
+
+Arabic:
+جيبلي زبدية.
+English:
+Bring me a bowl.
+Hindi:
+[configured translation]
+Potentially also:
+text
+🥣 → 👵
+
+The semantic representation must remain unchanged.
+This is intentionally more robust than translating arbitrary sentences.
+The application should therefore have a clear separation between:
+text
+USER INTERACTION
+        ↓
+SEMANTIC INTENT
+        ↓
+LANGUAGE / VISUAL PRESENTATION
+
+
+───
+
+10. HOME SCREEN
+The home screen should NOT be a conventional app dashboard.
+It should primarily contain:
+⭐ Common Requests
+These should be the most prominent controls.
+Examples:
+• Bring me water
+• Bring me a bowl
+• Bring me medicine
+• Bring me bread
+• Open the window
+• Close the window
+• Turn on the TV
+• Turn off the TV
+These should be configurable and reorderable.
+The family should be able to select which requests appear here.
+The most frequently used requests should ideally be placed at the top.
+
+───
+
+11. SITUATIONS, NOT JUST CATEGORIES
+Navigation should primarily be organized around situations and contexts, not abstract categories.
+Possible situations:
+• ⭐ Common Requests
+• 🍳 Kitchen
+• 🛋️ Living Room
+• 🛏️ Bedroom
+• 🚿 Bathroom
+• 👕 Clothes
+• 💊 Medicine
+• 🌅 Morning
+• 🌙 Night
+• 🆘 Help
+• Other configurable situations
+The exact situations must be configurable.
+The family should be able to add, remove, rename, reorder, and customize them.
+
+───
+
+12. SITUATION → OBJECT → ACTION
+A typical interaction should be:
+Step 1
+User chooses:
+🍳 Kitchen
+Step 2
+User sees:
+🥣 Bowl
+ 🍽️ Plate
+ 🥄 Spoon
+ 🍴 Fork
+ 🔪 Knife
+ 🥛 Glass
+ ☕ Cup
+ 🫖 Kettle
+ 🍞 Bread
+ 🧂 Salt
+ 🧊 Ice
+Step 3
+User chooses:
+🥣 Bowl
+Step 4
+The application asks:
+What do you want?
+Possible actions:
+🟢 Bring it
+ 🔵 Take it
+ 🟡 Put it somewhere
+ 🟠 Open
+ 🔴 Close
+ 🟣 Wash
+ etc.
+The available actions should depend on the selected object.
+For example:
+A bowl might support:
+• Bring
+• Take
+• Wash
+• Put
+A window might support:
+• Open
+• Close
+An AC might support:
+• Turn on
+• Turn off
+Do not display nonsensical actions.
+The family should configure which actions are available for each object.
+
+───
+
+13. DO NOT MAKE THE USER BUILD SENTENCES
+Internally, the user may be constructing:
+text
+Object
++
+Action
++
+Location
++
+Quantity
+
+But the UI should NOT feel like a sentence builder.
+It should feel like answering simple visual questions.
+For example:
+text
+🥣
+
+Then:
+What do you want?
+text
+🟢 Bring
+🔵 Put
+🟣 Wash
+🔴 Take
+
+Then:
+Where?
+text
+👵 Me
+🍳 Kitchen
+🧊 Refrigerator
+🛏️ Bedroom
+
+The user should never have to understand grammar.
+
+───
+
+14. CONTEXT-AWARE ACTIONS
+The system should allow actions to be constrained by context.
+Example:
+Bowl:
+text
+BRING
+WASH
+PUT
+TAKE
+
+Window:
+text
+OPEN
+CLOSE
+
+AC:
+text
+TURN_ON
+TURN_OFF
+
+Medicine:
+text
+BRING
+TAKE
+
+The family configures these.
+The app should only present appropriate choices.
+
+───
+
+15. QUANTITY
+The system should support quantities.
+Example:
+🥣 Bowl
+Then:
+How many?
+text
+1
+2
+3
+MORE
+
+But do not force quantity selection for every object.
+If an object is normally singular, quantity can default to 1.
+The family should be able to configure whether quantity is relevant.
+
+───
+
+16. LOCATIONS
+Locations should also be configurable.
+Possible examples:
+• Me
+• Kitchen
+• Bedroom
+• Bathroom
+• Living room
+• Refrigerator
+• Table
+• Bed
+• Outside
+• Other
+The location model should support both:
+1. Physical locations.
+2. Semantic destinations such as "to me."
+
+───
+
+17. COMMON REQUESTS SHOULD BYPASS MULTIPLE STEPS
+If the elderly person frequently asks:
+Bring me water.
+they should not need to go:
+Kitchen → Water → Bring → Me
+every time.
+The family should be able to create:
+text
+Common Request:
+BRING water TO_ME
+
+and put it directly on the home screen.
+One tap should show:
+💧
+ Bring me water.
+
+───
+
+18. ROUTINES
+Routines are a first-class feature.
+The elderly person may have repeated household routines.
+Examples:
+🌅 Morning
+• Open bedroom window
+• Open living room window
+• Bring water
+• Bring medicine
+• Prepare breakfast
+🌙 Night
+• Close bedroom window
+• Close living room window
+• Turn off lights
+• Prepare bed
+The actual routines are configurable by the family.
+A routine is essentially a collection of semantic intents.
+For example:
+json
+{
+  "name": "Morning",
+  "steps": [
+    {
+      "object": "bedroom_window",
+      "action": "OPEN"
+    },
+    {
+      "object": "living_room_window",
+      "action": "OPEN"
+    }
+  ]
+}
+
+The user should be able to tap:
+🌅 Morning
+and see a sequence of simple requests.
+
+───
+
+19. HELP SYSTEM
+There should be a permanent, highly visible:
+🆘 HELP
+option.
+It should NOT merely send:
+Help.
+Instead, it should provide specific common forms of assistance.
+Examples:
+🚶 Help me walk
+ 🪑 Help me sit
+ 🛏️ Help me get into bed
+ 🚿 Help me go to the bathroom
+ 🍳 Help me cook
+ 💊 Help with medicine
+ 📦 Help with something else
+The family should configure these.
+For example:
+text
+HELP + WALK
+
+renders as:
+Help me walk.
+And:
+text
+HELP + BATHROOM
+
+renders as:
+Help me go to the bathroom.
+
+───
+
+20. "SOMETHING ELSE" / VISUAL ESCAPE HATCH
+The system should provide a fallback for situations that were not predefined.
+Consider supporting:
+📷 Show
+The elderly person can take a photograph of an object/problem and show it to the caregiver.
+The resulting screen could say:
+Please look at this.
+and display the photograph prominently.
+This should not require AI in V1.
+It is simply a visual fallback.
+
+───
+
+21. FINAL REQUEST SCREEN
+Once the intent has been constructed, switch to a dedicated full-screen communication view.
+Example:
+text
+┌────────────────────────────────────┐
+│                                    │
+│                                    │
+│                 🥣                 │
+│                                    │
+│           جيبلي زبدية              │
+│                                    │
+│          Bring me a bowl           │
+│                                    │
+│                                    │
+│        🔊 SPEAK                    │
+│                                    │
+│          ← BACK                    │
+└────────────────────────────────────┘
+
+The most important information must be huge.
+The user should be able to physically turn the tablet toward the caregiver.
+The screen should be readable from a reasonable distance.
+
+───
+
+22. OPTIONAL TEXT-TO-SPEECH
+Support optional TTS.
+The final semantic request can be converted into speech in the caregiver's configured language.
+For example:
+text
+Semantic intent
+      ↓
+Caregiver language
+      ↓
+TTS
+
+However:
+• TTS must never be required for basic functionality.
+• The user should still be able to show the text.
+• TTS should have a huge, obvious button.
+• The family should be able to enable/disable it.
+
+───
+
+23. PICTURE-BASED FINAL OUTPUT
+The final request should ideally contain:
+1. Large object photograph/icon.
+2. Large translated text.
+3. Optional action icon.
+4. Optional destination icon.
+5. Optional TTS.
+For example:
+text
+🥣
+
+🫴
+
+جيبلّي زبدية
+
+Bring me a bowl
+
+This creates redundancy.
+Even if the caregiver doesn't understand the language perfectly, the visual semantic representation still helps.
+
+───
+
+24. CAREGIVER DOES NOT NEED TO READ THE ELDERLY USER'S LANGUAGE
+The final screen should ideally support two languages simultaneously:
+Top:
+Caregiver language
+Bottom:
+Elderly person's language
+For example:
+text
+Bring me a bowl.
+
+جيبلّي زبدية
+
+The caregiver language should be configurable.
+The elderly person's language should also be configurable.
+
+───
+
+25. FAMILY / ADMIN MODE
+The app must have a separate configuration mode.
+The elderly user should almost never enter it accidentally.
+Use something simple and deliberate, such as:
+• long press on a hidden area
+• hold settings for several seconds
+• a configurable unlock mechanism
+Do NOT require the elderly person to understand a password.
+The exact mechanism can be decided during implementation, but accidental entry must be difficult.
+
+───
+
+26. ADMIN FEATURES
+Family members should be able to configure:
+Household
+• Household name
+• Elderly person's language
+• Caregiver's language
+Situations
+• Add
+• Delete
+• Rename
+• Reorder
+• Change icon/photo
+• Change color
+Objects
+• Add
+• Delete
+• Edit
+• Photograph
+• Name
+• Elderly-language name
+• Caregiver-language name
+• Aliases
+• Location
+• Available actions
+• Quantity support
+Actions
+• Add
+• Edit
+• Delete
+• Rename
+• Configure translations
+• Configure icon
+• Configure color
+Locations
+• Add
+• Edit
+• Delete
+• Rename
+• Photo/icon
+Common Requests
+• Create
+• Delete
+• Edit
+• Reorder
+Routines
+• Create
+• Edit
+• Delete
+• Reorder steps
+Help
+• Configure help requests
+Appearance
+• Button size
+• Font size
+• Colors
+• Language
+• TTS
+• Sound
+• Haptic feedback
+
+───
+
+27. HOUSEHOLD-SPECIFIC CONFIGURATION
+The configuration should be highly personalized.
+For example:
+The family can photograph the exact bowl.
+Then define:
+text
+Internal object:
+bowl_01
+
+Elderly name:
+زبدية
+
+Caregiver name:
+Bowl
+
+Situation:
+Kitchen
+
+Actions:
+Bring
+Wash
+Put
+Take
+
+This is preferable to a generic catalog.
+
+───
+
+28. LOCAL-FIRST ARCHITECTURE
+The application should work completely offline.
+Do NOT make the core functionality dependent on:
+• Internet
+• cloud server
+• login
+• external database
+• API calls
+• external translation service
+• AI
+The tablet should be able to operate with no Internet connection.
+This is essential.
+
+───
+
+29. TECHNOLOGY
+Use:
+Flutter + Dart
+Target:
+Android tablet
+Design primarily for touch.
+Use a local database, preferably:
+SQLite
+A suitable Flutter SQLite package may be selected by the implementation agent based on current package stability.
+Images/photos should be stored locally and referenced from the database.
+Do not store large image binaries directly in database rows unless there is a compelling reason.
+
+───
+
+30. SUGGESTED DATA MODEL
+Design the data model cleanly and extensibly.
+Suggested entities:
+text
+Household
+Situation
+Object
+Action
+Location
+Routine
+RoutineStep
+CommonRequest
+HelpRequest
+Translation
+AppSettings
+
+Potential relationships:
+text
+Situation
+  └── Objects
+
+Object
+  ├── Photos
+  ├── Actions
+  ├── Locations
+  └── Translations
+
+Routine
+  └── RoutineSteps
+        └── SemanticIntent
+
+CommonRequest
+  └── SemanticIntent
+
+HelpRequest
+  └── SemanticIntent
+
+Do not hardcode the entire household into Flutter widget code.
+The UI should be data-driven.
+
+───
+
+31. DATA-DRIVEN UI
+This is critical.
+Do not implement:
+dart
+if (screen == kitchen) ...
+
+with dozens of hardcoded special cases.
+Instead:
+text
+Database
+    ↓
+Situation model
+    ↓
+Object models
+    ↓
+Available actions
+    ↓
+Intent builder
+    ↓
+Renderer
+
+The family should be able to modify the household without requiring code changes.
+
+───
+
+32. SEMANTIC INTENT MODEL
+Create a clean model for semantic requests.
+Potential structure:
+dart
+class Intent {
+  final String? objectId;
+  final String actionId;
+  final String? destinationId;
+  final int quantity;
+  final Map<String, dynamic>? parameters;
+}
+
+The exact implementation can be improved.
+The important requirement is that the intent is:
+• language-independent
+• serializable
+• reusable
+• displayable
+• speakable
+• usable by routines
+• usable by common requests
+• usable by help requests
+
+───
+
+33. LANGUAGE MODEL
+Do not scatter translations throughout widgets.
+Translations should be data.
+For example:
+text
+Translation
+  entityType
+  entityId
+  languageCode
+  text
+
+Or another clean normalized design.
+Support arbitrary language codes.
+Do not assume only Arabic and English.
+The initial configuration may use:
+• Arabic
+• English
+• Hindi
+but the architecture should allow additional languages such as:
+• Malayalam
+• Tamil
+• Bengali
+• Nepali
+• etc.
+without changing application architecture.
+
+───
+
+34. FAMILY-SPECIFIC TRANSLATIONS
+Family members must be able to override translations.
+This is important because literal machine translation may not match the words used in the household.
+Example:
+Internal:
+text
+bowl
+
+Configured Arabic:
+text
+زبدية
+
+rather than whatever an automatic translation service might produce.
+The family's wording always takes precedence.
+
+───
+
+35. COLORS
+Colors should have semantic consistency.
+For example, the family could configure:
+• Green = positive/action
+• Red = stop/close
+• Blue = objects
+• Yellow = attention
+• Purple = routines
+But do not rely on color alone.
+Every control must also have:
+• image/icon
+• spatial position
+• optionally text
+because elderly users may have difficulty distinguishing colors.
+The exact color palette should be accessible and have sufficient contrast.
+
+───
+
+36. LARGE TOUCH TARGETS
+Every interactive element must have a very large touch target.
+Do not optimize for information density.
+Optimize for:
+"Can an elderly person with poor precision hit this button?"
+Prefer a small number of huge cards over many small controls.
+Avoid:
+• tiny icons
+• tiny X buttons
+• tiny back arrows
+• small checkboxes
+• tiny text links
+• dense lists
+
+───
+
+37. NO SWIPE-DEPENDENT NAVIGATION
+Do not make important navigation dependent on swiping.
+Avoid requiring:
+• swipe left
+• swipe right
+• pull down
+• pinch
+• long scrolling
+The user should primarily:
+look → recognize → tap
+
+───
+
+38. CONSISTENCY
+The same location on screen should perform the same conceptual function whenever possible.
+For example:
+Bottom-left:
+⬅️ Back
+Bottom-right:
+🏠 Home
+Or another consistent layout.
+Do not move navigation controls unpredictably between screens.
+
+───
+
+39. IMMEDIATE FEEDBACK
+Every tap should produce obvious feedback.
+Possible feedback:
+• visual button enlargement
+• pressed state
+• short sound
+• haptic feedback
+• screen transition
+The user needs to know:
+"The tablet understood my tap."
+This is especially important because the user may not understand touchscreen technology.
+
+───
+
+40. ERROR TOLERANCE
+Assume accidental taps.
+The application should be forgiving.
+Avoid irreversible operations.
+For ordinary request construction:
+• Back should undo the current choice.
+• Home should safely return home.
+• The user should never become trapped.
+For important actions, confirmation can be used.
+But do not add confirmations everywhere.
+If the user selects:
+Bring me a bowl.
+there should not be:
+Are you sure?
+unless there is a specific reason.
+
+───
+
+41. HOME BUTTON
+There should always be an obvious way to return to the home screen.
+Do not rely exclusively on Android system navigation.
+The app should provide its own consistent navigation.
+
+───
+
+42. FULL-SCREEN / KIOSK-LIKE EXPERIENCE
+The app should feel like a dedicated household device rather than an Android application.
+Investigate an appropriate kiosk/full-screen approach.
+The elderly user should ideally not encounter:
+• Android notification shade
+• random system settings
+• accidental app switching
+• irrelevant system UI
+However, do not make development/debugging difficult.
+Provide a development/debug mode for developers.
+
+───
+
+43. ORIENTATION
+Design primarily for landscape tablet usage unless there is a strong reason to support portrait.
+The UI should adapt reasonably to different tablet resolutions.
+Avoid hardcoded pixel coordinates.
+Use responsive layouts.
+
+───
+
+44. ACCESSIBILITY
+Although this is primarily a visual system, implement accessibility principles:
+• very large text
+• strong contrast
+• large touch targets
+• clear visual hierarchy
+• no color-only meaning
+• optional audio feedback
+• optional TTS
+• predictable navigation
+• no unnecessary animations
+• avoid flashing or distracting effects
+The user may have:
+• reduced vision
+• reduced dexterity
+• slower reaction time
+• difficulty reading
+• difficulty understanding abstract UI
+• difficulty remembering navigation
+Design accordingly.
+
+───
+
+45. ANIMATIONS
+Use animations sparingly.
+Animations should communicate:
+• transition
+• selection
+• confirmation
+They should not exist just because an app normally has animations.
+Do not make the interface visually busy.
+
+───
+
+46. NO UNNECESSARY FEATURES
+Do NOT initially add:
+• accounts
+• social networking
+• caregiver messaging
+• cloud synchronization
+• chat
+• analytics dashboards
+• complicated AI
+• complicated settings
+• smart-home integration
+• appliance control
+• unnecessary notifications
+The application has one job:
+Help this elderly person communicate a need to the caregiver.
+Everything else is secondary.
+
+───
+
+47. OPTIONAL FUTURE FEATURES
+Architect the code so these could be added later without rebuilding the core:
+Voice input
+The elderly person could say:
+I need a bowl.
+Speech recognition could map this to:
+text
+BOWL + BRING + TO_ME
+
+But voice must remain secondary.
+AI-assisted configuration
+A family member photographs an object.
+AI suggests:
+Bowl
+The family confirms and configures it.
+AI-assisted translation
+AI can suggest translations during setup.
+Family remains in control.
+Usage-based favorites
+The system could learn which requests are most frequently used and suggest them.
+Backup/export
+Household configuration could eventually be exported/imported.
+Cloud backup
+Optional only.
+The app must remain functional offline.
+
+───
+
+48. AI SHOULD NOT CONTROL THE CORE USER INTERACTION
+This is an explicit requirement.
+Do not call an LLM to determine something that the UI already knows.
+If the user explicitly taps:
+text
+Kitchen
+→ Bowl
+→ Bring
+→ Me
+
+the system already knows the intent.
+There is no reason to ask AI:
+What does the user mean?
+The application should deterministically create:
+text
+BOWL + BRING + TO_ME
+
+AI can assist with:
+• setup
+• translations
+• object identification
+• future voice interpretation
+but the core communication path should be deterministic and reliable.
+
+───
+
+49. REQUEST HISTORY
+Consider a simple visual history.
+It can show recently created requests.
+Example:
+text
+Today
+
+🥣 Bring bowl
+💧 Bring water
+🪟 Open window
+💊 Bring medicine
+
+This can also provide a quick way to repeat a request.
+Do not make it look like a chat application.
+It is a visual history/recent-request list.
+
+───
+
+50. REPEAT LAST REQUEST
+Add an extremely simple option:
+🔁 Repeat
+If the elderly person just sent:
+Bring me water.
+they should be able to repeat it without rebuilding it.
+This is particularly useful for common needs.
+
+───
+
+51. "SHOW" FALLBACK
+Implement a basic visual fallback where the elderly person can take a photo.
+Example:
+text
+📷 SHOW
+
+Then:
+1. Camera opens.
+2. User takes photograph.
+3. Final screen displays the photograph.
+4. Optional text:
+Please look at this.
+This does not need AI.
+It is simply a way of communicating something that wasn't configured.
+
+───
+
+52. DEVELOPMENT APPROACH
+Do not attempt to build the entire product at once.
+Build it incrementally.
+Phase 1 — Functional prototype
+Build:
+• Home screen
+• Common Requests
+• Situations
+• Objects
+• Actions
+• Intent builder
+• Final request screen
+• Back/Home navigation
+Use hardcoded sample data initially if necessary.
+Goal:
+Demonstrate:
+text
+Home
+→ Kitchen
+→ Bowl
+→ Bring
+→ Me
+→ Final request
+
+
+───
+
+Phase 2 — Local data architecture
+Replace hardcoded content with SQLite.
+Implement:
+• Situations
+• Objects
+• Actions
+• Locations
+• Translations
+• Common Requests
+• Intents
+Make the UI completely data-driven.
+
+───
+
+Phase 3 — Family configuration
+Build Admin Mode.
+Allow the family to:
+• add photos
+• create objects
+• configure actions
+• configure translations
+• configure situations
+• create common requests
+• create routines
+• configure help
+
+───
+
+Phase 4 — Routines
+Implement:
+• Morning
+• Night
+• custom routines
+• routine steps
+• easy editing
+
+───
+
+Phase 5 — Accessibility and polish
+Test:
+• large touch targets
+• contrast
+• text size
+• accidental taps
+• navigation
+• tablet resolutions
+• orientation
+• responsiveness
+• performance
+I would even suggest making the sides and edges of the tablet (app) not do anything if tapped, so the elderly if they hold the tablet their fingers might mistakenly touch the sides, and we want to avoid mistaken touches.
+───
+
+Phase 6 — TTS
+Add optional text-to-speech.
+
+───
+
+Phase 7 — Optional future intelligence
+Only after the deterministic system works:
+• AI setup assistance
+• voice input
+• object recognition
+• suggested translations
+
+───
+
+53. TESTING STRATEGY
+Do not test only with developers.
+The primary usability test is:
+Put the tablet in front of an elderly person who has little or no technology experience and observe them without explaining the UI.
+Test tasks such as:
+Task 1
+"I want a bowl."
+Do not tell them where to tap.
+Observe.
+Task 2
+"I want the window opened."
+Observe.
+Task 3
+"I want water."
+Observe.
+Task 4
+"I need help going to the bathroom."
+Observe.
+Task 5
+"I want the morning routine."
+Observe.
+Measure:
+• Can they identify the correct picture?
+• Do they understand what to tap?
+• Do they understand the next screen?
+• Do they know how to go back?
+• Do they accidentally tap nearby controls?
+• Do they understand the final screen?
+• Do they feel confident that their request was communicated?
+Do not optimize the app based solely on developer assumptions.
+
+───
+
+54. PROJECT STRUCTURE
+Use a maintainable architecture.
+Separate:
+text
+presentation/
+domain/
+data/
+services/
+models/
+widgets/
+screens/
+
+A reasonable architecture such as Clean Architecture, feature-based architecture, or another maintainable Flutter architecture may be used.
+Do not over-engineer it.
+The application is local-first and relatively small.
+Favor:
+• clarity
+• maintainability
+• testability
+• simplicity
+over enterprise-level abstraction.
+
+───
+
+55. SUGGESTED FEATURE MODULES
+Possible modules:
+text
+home
+situations
+objects
+actions
+intent_builder
+request_display
+common_requests
+routines
+help
+admin
+household
+translations
+tts
+camera
+storage
+database
+settings
+
+Adjust this according to the actual architecture.
+
+───
+
+56. SAMPLE USER FLOW
+Implement this exact example during development.
+Home:
+text
+⭐ Common Requests
+
+🥣 Bring me a bowl
+💧 Bring me water
+💊 Bring medicine
+
+🍳 Kitchen
+🚿 Bathroom
+🛏️ Bedroom
+🌅 Morning
+🌙 Night
+🆘 Help
+
+User taps:
+🍳 Kitchen
+Display:
+text
+🥣 Bowl
+🍽️ Plate
+🥄 Spoon
+🍴 Fork
+🔪 Knife
+🥛 Glass
+☕ Cup
+🍞 Bread
+
+User taps:
+🥣 Bowl
+Display:
+text
+What do you want?
+
+🟢 Bring
+🔵 Take
+🟣 Wash
+🟡 Put
+
+User taps:
+🟢 Bring
+Display:
+text
+Where?
+
+👵 Me
+🍳 Kitchen
+🛏️ Bedroom
+🚿 Bathroom
+
+User taps:
+👵 Me
+Display:
+text
+🥣
+
+جيبلّي زبدية
+
+Bring me a bowl.
+
+🔊 PLAY
+
+← BACK
+🏠 HOME
+
+This is the core interaction that must work flawlessly.
+
+───
+
+57. SAMPLE MORNING ROUTINE
+Create a sample:
+text
+🌅 Morning
+
+with:
+text
+OPEN bedroom_window
+OPEN living_room_window
+BRING water TO_ME
+BRING medicine TO_ME
+
+The interface should allow the family to modify this.
+
+───
+
+58. SAMPLE HELP FLOW
+Home:
+text
+🆘 HELP
+
+Then:
+text
+🚶 Help me walk
+🪑 Help me sit
+🛏️ Help me get into bed
+🚿 Help me go to the bathroom
+🍳 Help me cook
+💊 Help with medicine
+📷 Show something
+
+Selecting one produces a final visual communication screen.
+
+───
+
+59. DESIGN LANGUAGE
+The overall visual style should be:
+• warm
+• calm
+• friendly
+• extremely clear
+• uncluttered
+• familiar
+• high contrast
+• large
+• reassuring
+Avoid:
+• corporate UI
+• futuristic UI
+• tiny controls
+• dark complex interfaces
+• excessive gradients
+• dense information
+• unnecessary decoration
+• technical terminology
+This is a household communication tool, not a productivity app.
+
+───
+
+60. DO NOT MAKE IT LOOK LIKE A NORMAL PHONE APP
+This is important enough to repeat.
+A normal application might have:
+text
+☰
+Home
+Search
+Profile
+Settings
+Notifications
+
+Do NOT do this.
+The elderly user should see something closer to:
+text
+⭐ Common requests
+
+🍳 Kitchen
+
+🛋️ Living room
+
+🛏️ Bedroom
+
+🚿 Bathroom
+
+🌅 Morning
+
+🌙 Night
+
+🆘 Help
+
+Large visual choices.
+Nothing hidden.
+Nothing clever.
+Nothing requiring prior technology knowledge.
+
+───
+
+61. CONFIGURATION SHOULD BE POWERFUL, BUT ELDER MODE SHOULD BE SIMPLE
+This is a fundamental architectural distinction.
+The application may contain a sophisticated configuration system internally.
+But Elder Mode should expose only what the elderly user needs.
+Think:
+text
+ADMIN MODE
+    ↓
+Complex configuration
+
+             ↓
+
+       DATA MODEL
+
+             ↓
+
+ELDER MODE
+    ↓
+Extremely simple visual interface
+
+Do not let admin complexity leak into Elder Mode.
+
+───
+
+62. NO CLOUD REQUIREMENT
+The first version should not require a server.
+No Firebase is necessary for V1.
+No Supabase is necessary for V1.
+No backend is necessary for V1.
+Use:
+text
+Flutter
++
+SQLite
++
+Local filesystem
+
+This makes the application:
+• offline
+• private
+• fast
+• inexpensive
+• reliable
+• easy to deploy to one tablet
+
+───
+
+63. PRIVACY
+Because this app may contain:
+• photographs of the home
+• photographs of household objects
+• medical/medicine-related information
+• household routines
+keep data local by default.
+Do not upload anything without explicit future configuration.
+The default application should be completely local.
+
+───
+
+64. IMPORTANT PRODUCT RULE
+Whenever you have a design decision, ask:
+"Would this make sense to someone who has never used a computer?"
+If the answer is no, simplify it.
+If the user needs instructions such as:
+"Press the menu button and then select..."
+the design is probably wrong.
+The ideal interaction is:
+See something familiar → tap it → see the next obvious choice → tap it → show the result.
+
+───
+
+65. FINAL SUCCESS CRITERIA
+The project is successful when an elderly person with essentially no technology experience can:
+1. Pick up the tablet.
+2. Recognize the things on screen.
+3. Find a common request.
+4. Construct a new request from pictures.
+5. Understand what the final screen means.
+6. Show that screen to the caregiver.
+7. Return home without assistance.
+8. Repeat the process later without being taught again.
+The application should feel less like "using an app" and more like:
+Pointing at pictures to tell another person what I need.
+That is the product.
+
+───
+
+66. IMPLEMENTATION INSTRUCTIONS FOR CLAUDE CODE
+Start by inspecting the existing repository and determining:
+• current Flutter version
+• Dart version
+• existing project structure
+• Android configuration
+• dependencies
+• whether anything should be retained
+Then:
+1. Propose the architecture briefly.
+2. Define the data models.
+3. Define the SQLite schema.
+4. Define the navigation structure.
+5. Define the design system.
+6. Build the Elder Mode prototype.
+7. Implement the semantic intent system.
+8. Implement the final request screen.
+9. Implement local persistence.
+10. Implement Admin Mode.
+11. Implement routines.
+12. Implement help.
+13. Implement TTS.
+14. Test the core user flows.
+15. Refactor only where necessary.
+Do not prematurely implement cloud services or AI.
+Do not replace deterministic intent construction with an LLM.
+Do not build a caregiver application.
+Do not add features simply because they are common in modern apps.
+Prioritize the actual elderly user above all other concerns.
+When making design decisions not explicitly specified above, choose the solution that minimizes cognitive load and maximizes recognizability for an elderly person with no technology experience.
+Before making major architectural changes, explain the reasoning.
+Build the application incrementally and keep each stage runnable.
+The final result should be a real, functional Flutter Android tablet application, not merely a mockup.
