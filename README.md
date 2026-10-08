@@ -1,5 +1,8 @@
 # Home Talk — Elderly Visual Communication Tablet App
 
+<img width="1920" height="1200" alt="Caregiver Assistant Screenshot" src="https://github.com/user-attachments/assets/37df2692-8936-4157-bfac-5fc7c2cd4570" />
+
+
 A single-device Flutter tablet app that lets an elderly person communicate household
 needs to a foreign-language caregiver **by recognizing pictures and tapping them** —
 no reading, typing, menus, or technology knowledge required.
